@@ -1,6 +1,7 @@
 package org.vitaliistf;
 
 import java.util.Arrays;
+import java.util.OptionalDouble;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
@@ -76,11 +77,14 @@ public class Main {
      * @param start Starting value for x.
      * @param end   Ending value for x.
      * @param step  Step size for x values.
+     * @throws IllegalArgumentException if step is equal to 0.
      * @return Number of steps required to cover the specified range with the given step size.
      */
     public int calculateSteps(double start, double end, double step) {
         if (start > end) {
             return 0;
+        } else if (step == 0) {
+            throw new IllegalArgumentException("Step should not be equal to 0");
         }
         return (int) Math.round((end - start) / step) + 1;
     }
@@ -169,13 +173,22 @@ public class Main {
      * Calculates the average of elements in the given array.
      *
      * @param arr Array of double values.
+     * @throws IllegalArgumentException if array is empty or null.
+     * @throws RuntimeException if average is not calculated.
      * @return Average of elements in the array, or 0.0 if the array is empty.
      */
     public double calculateAverage(double[] arr) {
-        return DoubleStream
+        if (arr.length == 0) {
+            throw new IllegalArgumentException("Array should have at least one element");
+        }
+        OptionalDouble result = DoubleStream
                 .of(arr)
-                .average()
-                .orElse(0.0);
+                .average();
+        if (result.isPresent()) {
+            return result.getAsDouble();
+        } else {
+            throw new RuntimeException("Average can't be calculated");
+        }
     }
 
     /**
